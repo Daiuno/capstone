@@ -68,8 +68,10 @@ endif()
 set(SUPPORTED_ARCHITECTURES ARM ARM64 M68K MIPS PPC SPARC SYSZ XCORE X86 TMS320C64X M680X EVM MOS65XX WASM BPF RISCV SH TRICORE)
 set(SUPPORTED_ARCHITECTURE_LABELS ARM ARM64 M68K MIPS PowerPC Sparc SystemZ XCore x86 TMS320C64x M680x EVM MOS65XX WASM BPF RISCV SH TriCore)
 
-# If building for OSX it's best to allow CMake to handle building both architectures
-if(APPLE AND NOT CAPSTONE_BUILD_MACOS_THIN)
+# If building for macOS it's best to allow CMake to handle building both architectures.
+# Do not run this on iOS/tvOS/watchOS: APPLE is true there too, but forcing x86_64;arm64
+# breaks cross-compiles (Capstone C files hit "architecture not supported" in the device SDK).
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APPLE AND NOT CAPSTONE_BUILD_MACOS_THIN)
     # The cibuildwheel on Github Actions sets this env variable
     # with the architecture flags it wants to build for.
     if(DEFINED ENV{ARCHFLAGS})
